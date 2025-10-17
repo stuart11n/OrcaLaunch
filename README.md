@@ -9,3 +9,5 @@ To work properly this needs Single Instance, but by default OrcaSlicer does not 
 My [fork](https://github.com/stuart11n/OrcaSlicer) modifies OrcaSlicer so it **does**. My modification is very small Windows only and probably has some side-effects, but it works for me. It would be great if OrcaSlicer could improve upon and incorporate it. 
 
 Without the fork, you won't be able to enable Single Instance so it won't be as slick but it'll still work.
+
+First 80% coded with Gemini 🐐 the rest is is 100% pure, old-fashioned, homegrown human.
