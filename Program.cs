@@ -329,6 +329,8 @@ public class ProcessParameterFinderForm : Form
             Process.Start(info.ExecutablePath, finalArgs);
 
             outputTextBox.AppendText($"\nRELAUNCHED: '{info.ExecutablePath}'\nArguments: {finalArgs}\n");
+
+            Application.Exit();
         }
         catch (Exception ex)
         {
