@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OrcaLaunch": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\stuar\\Sync\\Etsy\\isolators-3mf\\Isolators-twin-0.6-frostbite.3mf\""
+    }
+  }
+}
