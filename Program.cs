@@ -133,7 +133,7 @@ public class ProcessParameterFinderForm : Form
                 //new RowStyle(SizeType.Absolute, 25),   // Row 1: instructionsLabel
                 new RowStyle(SizeType.AutoSize),       // Row 2: buttonsPanel (dynamic height)
                 //new RowStyle(SizeType.Absolute, 25),   // Row 3: toggleLogLabel (NEW)
-                //new RowStyle(SizeType.Absolute, 0)     // Row 4: outputTextBox (Collapsed by default)
+                new RowStyle(SizeType.Absolute, 0)     // Row 4: outputTextBox (Collapsed by default)
             }
         };
 
@@ -141,7 +141,7 @@ public class ProcessParameterFinderForm : Form
         //layoutPanel.Controls.Add(instructionsLabel, 0, 1);
         layoutPanel.Controls.Add(buttonsPanel, 0, 2);
         //layoutPanel.Controls.Add(toggleLogLabel, 0, 3);
-        //layoutPanel.Controls.Add(outputTextBox, 0, 4);
+        layoutPanel.Controls.Add(outputTextBox, 0, 4);
 
         this.Controls.Add(layoutPanel);
         // findButton removed
@@ -323,7 +323,7 @@ public class ProcessParameterFinderForm : Form
 
             // 2. Combine the arguments: datadir argument + parent application arguments
             // We use the datadir argument first to ensure it takes precedence.
-            string finalArgs = $"{datadirArg} {currentAppArguments}".Trim();
+            string finalArgs = $"{datadirArg} \"{currentAppArguments}\"".Trim();
 
             // Use Process.Start to launch the application
             Process.Start(info.ExecutablePath, finalArgs);
