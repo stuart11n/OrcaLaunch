@@ -41,7 +41,7 @@ public class ProcessParameterFinderForm : Form
         }
 
         InitializeComponent();
-        this.Text = "OrcaSlicer Launcher";
+        this.Text = "Slicer Launcher";
         this.BackColor = Color.FromArgb(245, 247, 250);
         this.Font = new Font("Segoe UI", 10);
 
@@ -52,8 +52,8 @@ public class ProcessParameterFinderForm : Form
     private void InitializeComponent()
     {
         // Setup Form
-        this.ClientSize = new Size(700, 100); // Increased size
-        this.MinimumSize = new Size(500, 100);
+        this.ClientSize = new Size(700, 130); // Increased size
+        this.MinimumSize = new Size(500, 130);
         this.Padding = new Padding(15);
         this.AutoScroll = true;
 
@@ -145,6 +145,23 @@ public class ProcessParameterFinderForm : Form
 
         this.Controls.Add(layoutPanel);
         // findButton removed
+
+        Button processButton = new Button
+        {
+            Text = "Update",
+            //Tag = relaunchInfo, // Store the relaunch info in the Tag
+            Width = 100,
+            Height = 25,
+            Margin = new Padding(5),
+            BackColor = Color.FromArgb(77, 137, 77), // Medium Blue
+            ForeColor = Color.White,
+            FlatStyle = FlatStyle.Flat,
+            Cursor = Cursors.Hand
+        };
+        processButton.FlatAppearance.BorderSize = 0;
+        processButton.Click += FindButton_Click;
+
+        layoutPanel.Controls.Add(processButton);
     }
 
     /// <summary>
@@ -199,7 +216,7 @@ public class ProcessParameterFinderForm : Form
 
         // WQL query now selects both ProcessId and CommandLine
         // We only need CommandLine, but ProcessId is harmless.
-        string wmiQuery = $"SELECT ProcessId, CommandLine FROM Win32_Process WHERE Name = '{TargetProcessName}'";
+        string wmiQuery = $"SELECT ProcessId, CommandLine FROM Win32_Process WHERE Name = '{TargetProcessName}' OR Name = 'Bambu-Studio.exe'";
         int instancesWithDatadir = 0;
 
         try
@@ -264,6 +281,32 @@ public class ProcessParameterFinderForm : Form
                                 outputTextBox.AppendText($"Executable Path: {executablePath}\n");
                                 outputTextBox.AppendText($"Created relaunch button: '{folderName}'.\n\n");
                             }
+                            else if (commandLine.Contains("Bambu"))
+                            {
+                                var relaunchInfo = new ProcessRelaunchInfo
+                                {
+                                    ExecutablePath = executablePath,
+                                    DatadirPath = ""
+                                };
+
+                                // 3. Create the dynamic button
+                                Button processButton = new Button
+                                {
+                                    Text = "SuperToot",
+                                    Tag = relaunchInfo, // Store the relaunch info in the Tag
+                                    Width = 180,
+                                    Height = 35,
+                                    Margin = new Padding(5),
+                                    BackColor = Color.FromArgb(77, 137, 219), // Medium Blue
+                                    ForeColor = Color.White,
+                                    FlatStyle = FlatStyle.Flat,
+                                    Cursor = Cursors.Hand
+                                };
+
+                                processButton.Click += ProcessButton_Click;
+
+                                buttonsPanel.Controls.Add(processButton);
+                            }
                             else
                             {
                                 outputTextBox.AppendText("Could not find both DATADIR parameter and Executable Path for this instance.\n\n");
@@ -318,12 +361,21 @@ public class ProcessParameterFinderForm : Form
     {
         try
         {
-            // 1. Prepare the datadir argument. Quoting the path handles spaces.
-            string datadirArg = $"--datadir \"{info.DatadirPath}\"";
+            string finalArgs;
 
-            // 2. Combine the arguments: datadir argument + parent application arguments
-            // We use the datadir argument first to ensure it takes precedence.
-            string finalArgs = $"{datadirArg} \"{currentAppArguments}\"".Trim();
+            if (info.DatadirPath == "")
+            {
+                finalArgs = $"\"{currentAppArguments}\"".Trim();
+            }
+            else
+            {
+                // 1. Prepare the datadir argument. Quoting the path handles spaces.
+                string datadirArg = $"--datadir \"{info.DatadirPath}\"";
+
+                // 2. Combine the arguments: datadir argument + parent application arguments
+                // We use the datadir argument first to ensure it takes precedence.
+                finalArgs = $"{datadirArg} \"{currentAppArguments}\"".Trim();
+            }
 
             // Use Process.Start to launch the application
             Process.Start(info.ExecutablePath, finalArgs);
